@@ -14,6 +14,9 @@ app.use(express.static(__dirname + '/public'));
 // Needed for parsing form data
 app.use(express.json());       
 app.use(express.urlencoded({extended: true}));
+// add this snippet after "var express = require('express')"
+var axios = require('axios');
+
 
 // Needed for Prisma to connect to database
 const { PrismaClient } = require('@prisma/client')
@@ -100,5 +103,15 @@ app.post("/delete/:id", async (req, res) => {
 app.get('/demo', function(req, res) {
   res.render('pages/demo');
 });
-
+// add this snippet before 
+app.get('/weather', async (req, res) => {
+    try {
+      const response = await axios.get('https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast');
+      res.render('pages/weather', { weather: response.data });
+    } catch (error) {
+      console.error(error);
+      res.send('Error fetching weather data');
+    }
+  });
+ 
 app.listen(8080);
