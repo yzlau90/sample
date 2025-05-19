@@ -23,6 +23,98 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient();
 
 // Main landing page
+
+  let map;
+  let bookmarks = [];
+  const bookmarkMarkers = [];
+
+  function loadBookmarks() {
+    const saved = localStorage.getItem("bookmarks");
+    if (saved) {
+      bookmarks = JSON.parse(saved);
+    }
+  }
+
+  function saveBookmarks() {
+    localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+  }
+
+  function updateBookmarkListUI() {
+    const list = document.getElementById("bookmarkList");
+    list.innerHTML = "";
+
+    if (bookmarks.length === 0) {
+      list.textContent = "No bookmarks yet";
+      return;
+    }
+
+    bookmarks.forEach((bookmark, index) => {
+      const item = document.createElement("div");
+      item.className = "bookmark-item";
+      item.textContent = bookmark.name;
+      item.onclick = () => {
+        const { lat, lng } = bookmark.position;
+        map.panTo(bookmark.position);
+        map.setZoom(14);
+        google.maps.event.trigger(bookmarkMarkers[index], "click");
+      };
+      list.appendChild(item);
+    });
+  }
+
+  function addBookmark(name, position) {
+    const bookmark = { name, position };
+    bookmarks.push(bookmark);
+    saveBookmarks();
+    const marker = addMarkerToMap(name, position);
+    bookmarkMarkers.push(marker);
+    updateBookmarkListUI();
+  }
+
+  function addMarkerToMap(name, position) {
+    const marker = new google.maps.Marker({
+      position,
+      map,
+      title: name
+    });
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: `<strong>${name}</strong>`
+    });
+
+    marker.addListener("click", () => {
+      infoWindow.open(map, marker);
+    });
+
+    return marker;
+  }
+
+  function initMap() {
+    loadBookmarks();
+
+    map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 12,
+      center: bookmarks.length > 0 ? bookmarks[0].position : { lat: 40.748817, lng: -73.985428 } // Default: NYC
+    });
+
+    // Add existing markers
+    bookmarks.forEach(bookmark => {
+      const marker = addMarkerToMap(bookmark.name, bookmark.position);
+      bookmarkMarkers.push(marker);
+    });
+
+    updateBookmarkListUI();
+
+    // Add new bookmarks on map click
+    map.addListener("click", (e) => {
+      const latLng = e.latLng;
+      const name = prompt("Enter a name for this bookmark:");
+      if (name) {
+        addBookmark(name, { lat: latLng.lat(), lng: latLng.lng() });
+      }
+    });
+  }
+
 app.get('/', async function(req, res) {
 
     // Try-Catch for any errors
