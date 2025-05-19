@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
+
+  <!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
-    <link rel="stylesheet" href="/css/style.css" >
-    <!-- Google tag (gtag.js) -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-55G6CL815X"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -15,80 +13,76 @@
 
   gtag('config', 'G-55G6CL815X');
 </script>
-</head>
-<body>
-    <title>Where are the Best Hokkien Mee?</title>
+  <title>Best of Hokkien Mee Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
+      font-family: sans-serif;
     }
-
-    #sidebar {
-      width: 250px;
-      height: 100vh;
-      background: #f8f9fa;
-      border-right: 1px solid #ddd;
-      overflow-y: auto;
-      padding: 10px;
-    }
-
-    #sidebar h2 {
-      margin-top: 0;
-    }
-
-    .bookmark-item {
-      padding: 8px;
-      margin-bottom: 5px;
-      background: #ffffff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .bookmark-item:hover {
-      background: #e9ecef;
-    }
-
     #map {
-      flex: 1;
-      height: 100vh;
+      height: 80vh;
+    }
+    .filters {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8f8f8;
+      border-bottom: 1px solid #ccc;
+    }
+    .filters a {
+      padding: 0.5rem 1rem;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .filters a:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
+  <div class="filters">
+    <a href="filter.html?tag=wet">Wet</a>
+    <a href="filter.html?tag=dry">Dry</a>
+    <a href="filter.html?tag=sambal">Sambal</a>
+    <a href="filter.html?tag=cut chilli">Cut Chilli</a>
+    <a href="filter.html?tag=wok hei">Wok Hei</a>
+  </div>
+  <div id="map"></div>
 
-<div id="sidebar">
-  <h2>All of the Best Hokkien Mee</h2>
-  <div id="bookmarkList">No bookmarks yet</div>
-</div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const locations = [
+      {
+        name: "ABC Hawker",
+        lat: 1.3521,
+        lng: 103.8198,
+        categories: ["wet", "sambal", "wok hei"],
+        googleReviewLink: "https://www.google.com/maps/place/ABC+Hawker"
+      },
+      {
+        name: "XYZ Food Court",
+        lat: 1.3000,
+        lng: 103.8000,
+        categories: ["dry", "cut chilli"],
+        googleReviewLink: "https://www.google.com/maps/place/XYZ+Food+Court"
+      }
+      // Add more...
+    ];
 
-<div id="map"></div>
-    <main class="container">
-        <!-- Navbar which can be reused across other pages -->
-        <%- include('../partials/navbar'); %>
+    const map = L.map('map').setView([1.3521, 103.8198], 12);
 
-        <!-- Information welcoming visitors to my page -->
-        <div class="welcome-container">
-            <h1>Welcome to my blog</h1>
-            <h2>Learn about what happened in my day!</h2>
-        </div>
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-        <div class="new-post-btn-container">
-           <a href="/new" class="button" role="button">+ New Post</a>
-        </div>
-
-        <!-- Show blog posts -->
-        <% blogs.forEach(post => { %>
-            <article class="post-container">
-                <h3><%= post.title %></h3>
-                <p><%= post.content %></p>
-                <form action="/delete/<%= post.id %>" method="post" onsubmit="return confirm('Do you really want to delete this post?');">
-                    <button class="outline primary" type="submit">Delete</button>
-                </form>
-            </article>
-        <% }); %>
-    </main>
+    locations.forEach(loc => {
+      const marker = L.marker([loc.lat, loc.lng]).addTo(map);
+      marker.bindPopup(`<b>${loc.name}</b><br><a href="${loc.googleReviewLink}" target="_blank">View Reviews</a>`);
+    });
+  </script>
 </body>
 </html>
+  
