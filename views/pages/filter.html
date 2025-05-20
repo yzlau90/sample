@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Best Hokkien Mee by Taste Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #fffaf5;
+    }
+    h1 {
+      text-align: center;
+      color: #ff7f00;
+      font-size: 2.5rem;
+      margin: 1rem;
+    }
+    .filters {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .filters button {
+      background: #ff7f00;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      margin: 0.3rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .filters button:hover {
+      background: #e56e00;
+    }
+    #map {
+      height: 60vh;
+      width: 100%;
+    }
+    .location-list {
+      padding: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    .tags span {
+      background: #ffeed0;
+      color: #ff7f00;
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      margin-right: 0.2rem;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Filter Hokkien Mee by Taste Profile</h1>
+
+<div class="filters">
+  <button onclick="applyFilter('wet')">Wet</button>
+  <button onclick="applyFilter('dry')">Dry</button>
+  <button onclick="applyFilter('sambal')">Sambal</button>
+  <button onclick="applyFilter('cut chilli')">Cut Chilli</button>
+  <button onclick="applyFilter('wok hei')">Wok Hei</button>
+  <button onclick="applyFilter('lard')">Lard</button>
+  <button onclick="applyFilter('all')">Show All</button>
+</div>
+
+<div id="map"></div>
+<div class="location-list" id="location-list"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+  let map;
+  let allLocations = [];
+  let markers = [];
+
+  function initMap() {
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 1.3521, lng: 103.8198 },
+      zoom: 12,
+    });
+
+    fetch("HKMlocations.csv")
+      .then(res => res.text())
+      .then(csv => {
+        Papa.parse(csv, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            allLocations = results.data;
+            applyFilter('all');
+          }
+        });
+      });
+  }
+
+  function clearMarkers() {
+    markers.forEach(m => m.setMap(null));
+    markers = [];
+  }
+
+  function applyFilter(tag) {
+    clearMarkers();
+    const listContainer = document.getElementById("location-list");
+    listContainer.innerHTML = "";
+
+    const filtered = tag === 'all'
+      ? allLocations
+      : allLocations.filter(loc => loc.tags && loc.tags.toLowerCase().includes(tag));
+
+    filtered.forEach(loc => {
+      if (!loc.lat || !loc.lng) return;
+      const lat = parseFloat(loc.lat);
+      const lng = parseFloat(loc.lng);
+
+      const marker = new google.maps.Marker({
+        position: { lat, lng },
+        map,
+        title: loc.name
+      });
+      markers.push(marker);
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">View on Google Maps</a>`
+      });
+      marker.addListener("click", () => infoWindow.open(map, marker));
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h2>${loc.name}</h2>
+        <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
+        <p><strong>Description:</strong> ${loc.description}</p>
+        <p><strong>Taste Profile:</strong> <span class="tags">${formatTags(loc.tags)}</span></p>
+        <p><strong>Location:</strong> ${loc.town}</p>
+        <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
+        <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
+        <p><strong>Pre-order:</strong> ${loc.pre_order || "N/A"}</p>
+        <p><a href="${loc.google_maps_url}" target="_blank">📍 Google Maps</a></p>
+      `;
+      listContainer.appendChild(card);
+    });
+  }
+
+  function formatTags(tagString) {
+    if (!tagString) return "";
+    return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+  }
+</script>
+
+<!-- Replace with your actual API key -->
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHURE9HRAzI3MEV9rZJCJvO6I91mOHojo&callback=initMap">
+</script>
+
+</body>
+</html>
