@@ -31,6 +31,7 @@
   <main class="container">
   <!-- Navbar which can be reused across other pages -->
     <%- include('../partials/navbar'); %>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script async
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHURE9HRAzI3MEV9rZJCJvO6I91mOHojo&callback=initMap">
 </script>
@@ -43,8 +44,11 @@
       zoom: 12
     });
 
-    fetch("HKMlocations.csv")
-      .then(response => response.text())
+  fetch("HKMlocations.csv")
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to load CSV");
+        return response.text();
+      })
       .then(csvText => {
         Papa.parse(csvText, {
           header: true,
@@ -54,6 +58,8 @@
             const listContainer = document.getElementById("location-list");
 
             data.forEach(loc => {
+              if (!loc.lat || !loc.lng) return;
+
               const lat = parseFloat(loc.lat);
               const lng = parseFloat(loc.lng);
 
@@ -64,7 +70,7 @@
               });
 
               const infoWindow = new google.maps.InfoWindow({
-                content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">View on Google Maps</a>`
+                content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">Open in Google Maps</a>`
               });
 
               marker.addListener("click", () => {
@@ -74,10 +80,10 @@
               const card = document.createElement("div");
               card.className = "card";
               card.innerHTML = `
-                <h3>${loc.name}</h3>
+                <h2>${loc.name}</h2>
                 <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
                 <p><strong>Description:</strong> ${loc.description}</p>
-                <p><strong>Taste Profile:</strong> <span class="tags">${loc.tags.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ")}</span></p>
+                <p><strong>Taste Profile:</strong> <span class="tags">${formatTags(loc.tags)}</span></p>
                 <p><strong>Location:</strong> ${loc.town}</p>
                 <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
                 <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
@@ -86,11 +92,23 @@
               `;
               listContainer.appendChild(card);
             });
+          },
+          error: err => {
+            console.error("CSV parse error:", err);
           }
         });
+      })
+      .catch(err => {
+        console.error("CSV fetch error:", err);
       });
   }
+
+  function formatTags(tagString) {
+    if (!tagString) return "";
+    return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+  }
 </script>
+
 </body>
 </html>
   
