@@ -1,9 +1,9 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-   <!-- Google tag (gtag.js) -->
+  <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-55G6CL815X"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -13,21 +13,20 @@
   gtag('config', 'G-55G6CL815X');
 </script>
   <title>Best of Hokkien Mee Map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
   <style>
     body {
       margin: 0;
       font-family: sans-serif;
     }
     #map {
-      height: 80vh;
+      height: 60vh;
     }
     .filters {
       display: flex;
       gap: 1rem;
       padding: 1rem;
       background: #f8f8f8;
-      border-bottom: 1px solid #ccc;
     }
     .filters a {
       padding: 0.5rem 1rem;
@@ -39,6 +38,25 @@
     .filters a:hover {
       background: #0056b3;
     }
+    .list {
+      padding: 1rem;
+    }
+    .card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    .tag {
+      display: inline-block;
+      margin-right: 0.5rem;
+      background: #eee;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -48,40 +66,69 @@
     <a href="filter.html?tag=sambal">Sambal</a>
     <a href="filter.html?tag=cut chilli">Cut Chilli</a>
     <a href="filter.html?tag=wok hei">Wok Hei</a>
+    <a href="filter.html?tag=lard">Pork Lard</a> 
   </div>
-  <div id="map"></div>
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+</script>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const locations = [
-      {
-        name: "ABC Hawker",
-        lat: 1.3521,
-        lng: 103.8198,
-        categories: ["wet", "sambal", "wok hei"],
-        googleReviewLink: "https://www.google.com/maps/place/ABC+Hawker"
-      },
-      {
-        name: "XYZ Food Court",
-        lat: 1.3000,
-        lng: 103.8000,
-        categories: ["dry", "cut chilli"],
-        googleReviewLink: "https://www.google.com/maps/place/XYZ+Food+Court"
-      }
-      // Add more...
-    ];
+    let map;
 
-    const map = L.map('map').setView([1.3521, 103.8198], 12);
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 1.3521, lng: 103.8198 },
+        zoom: 12,
+      });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+      fetch("HKMlocations.csv")
+        .then((response) => response.text())
+        .then((csvText) => {
+          Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+              const data = results.data;
+              const listContainer = document.getElementById("location-list");
 
-    locations.forEach(loc => {
-      const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-      marker.bindPopup(`<b>${loc.name}</b><br><a href="${loc.googleReviewLink}" target="_blank">View Reviews</a>`);
-    });
+              data.forEach((loc) => {
+                const lat = parseFloat(loc.lat);
+                const lng = parseFloat(loc.lng);
+                const marker = new google.maps.Marker({
+                  position: { lat, lng },
+                  map: map,
+                  title: loc.name,
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                  content: `<b>${loc.name}</b><br><a href="${loc.google_maps_url}" target="_blank">View on Google Maps</a>`,
+                });
+
+                marker.addListener("click", () => {
+                  infoWindow.open(map, marker);
+                });
+
+                // Add to list
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                  <h3>${loc.name}</h3>
+                  <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
+                  <p><strong>Description:</strong> ${loc.description}</p>
+                  <p><strong>Town:</strong> ${loc.town}</p>
+                  <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
+                  <p><strong>Starting Price:</strong> $${parseFloat(loc.price).toFixed(2)}</p>
+                  <p><strong>Tags:</strong> ${loc.tags.split(";").map(tag => `<span class="tag">${tag}</span>`).join(" ")}</p>
+                  <p><a href="${loc.google_maps_url}" target="_blank">📍 Google Maps</a></p>
+                `;
+                listContainer.appendChild(card);
+              });
+            },
+          });
+        });
+    }
   </script>
+
 </body>
 </html>
   
