@@ -1,10 +1,45 @@
-.welcome-container {
-    text-align: center;
-
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
-
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+    #map {
+      height: 60vh;
+    }
+    .filters {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8f8f8;
+    }
+    .filters a {
+      padding: 0.5rem 1rem;
+      background: #C70039;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .filters a:hover {
+      background: #900C3F;
+    }
+    .list {
+      padding: 1rem;
+    }
+    .card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    .tag {
+      display: inline-block;
+      margin-right: 0.5rem;
+      background: #eee;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
 .new-post-btn-container{
     text-align: center;
 

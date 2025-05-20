@@ -15,52 +15,10 @@
 
   <title>Best of Hokkien Mee Map</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-    }
-    #map {
-      height: 60vh;
-    }
-    .filters {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem;
-      background: #f8f8f8;
-    }
-    .filters a {
-      padding: 0.5rem 1rem;
-      background: #007bff;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    .filters a:hover {
-      background: #0056b3;
-    }
-    .list {
-      padding: 1rem;
-    }
-    .card {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    .card h3 {
-      margin-top: 0;
-    }
-    .tag {
-      display: inline-block;
-      margin-right: 0.5rem;
-      background: #eee;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-    }
-  </style>
-</head>
+ </head>
 <body>
+<p><h1 style="color: #ff7f00; font-size: 3rem; font-weight: bold;">Best of Hokkien Mee Map</h1></p>
+<p>
   <div class="filters">
     <a href="filter.html?tag=wet">Wet</a>
     <a href="filter.html?tag=dry">Dry</a>
@@ -69,6 +27,7 @@
     <a href="filter.html?tag=wok hei">Wok Hei</a>
     <a href="filter.html?tag=lard">Pork Lard</a> 
   </div>
+</p>
   <main class="container">
   <!-- Navbar which can be reused across other pages -->
     <%- include('../partials/navbar'); %>
