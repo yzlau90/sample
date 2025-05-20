@@ -23,63 +23,7 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient();
 
 // Main landing page
-<script>
-  let map;
 
-  function initMap() {
-    map = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: 1.3521, lng: 103.8198 }, // Singapore
-      zoom: 12
-    });
-
-    fetch("HKMlocations.csv")
-      .then(response => response.text())
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const data = results.data;
-            const listContainer = document.getElementById("location-list");
-
-            data.forEach(loc => {
-              const lat = parseFloat(loc.lat);
-              const lng = parseFloat(loc.lng);
-
-              const marker = new google.maps.Marker({
-                position: { lat, lng },
-                map: map,
-                title: loc.name
-              });
-
-              const infoWindow = new google.maps.InfoWindow({
-                content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">View on Google Maps</a>`
-              });
-
-              marker.addListener("click", () => {
-                infoWindow.open(map, marker);
-              });
-
-              const card = document.createElement("div");
-              card.className = "card";
-              card.innerHTML = `
-                <h3>${loc.name}</h3>
-                <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
-                <p><strong>Description:</strong> ${loc.description}</p>
-                <p><strong>Taste Profile:</strong> <span class="tags">${loc.tags.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ")}</span></p>
-                <p><strong>Location:</strong> ${loc.town}</p>
-                <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
-                <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
-                <p><strong>Pre-order Info:</strong> ${loc.pre_order || "N/A"}</p>
-                <p><a href="${loc.google_maps_url}" target="_blank">📍 Google Maps</a></p>
-              `;
-              listContainer.appendChild(card);
-            });
-          }
-        });
-      });
-  }
-</script>
 
 app.get('/', async function(req, res) {
 
