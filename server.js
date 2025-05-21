@@ -20,6 +20,15 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient();
 
 // Main landing page
+app.get("pages/home", (req, res) => {
+  res.render("pages/home"); // Renders views/home.ejs
+});
+
+app.get("pages/filter", (req, res) => {
+  res.render("pages/filter"); // Renders views/home.ejs
+});
+
+
 app.get('/', async function(req, res) {
 
     // Try-Catch for any errors
