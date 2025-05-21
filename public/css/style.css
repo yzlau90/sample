@@ -20,7 +20,7 @@
       display: flex;
       gap: 1rem;
       padding: 1rem;
-      background: #f8f8f8;
+      background: #fffaf5;
     }
     .filters a {
       padding: 0.5rem 1rem;
@@ -52,9 +52,7 @@
       margin: 0 0 0.5rem;
       color: #333;
     }
-    .card h3 {
-      margin-top: 0;
-    }
+
     .tag {
       display: inline-block;
       margin-right: 0.5rem;
@@ -90,9 +88,7 @@
     margin-bottom: 40px;
 }
 
-.cancel-create-post {
-    text-align: center;
-}
+
 /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
 gmp-map {
