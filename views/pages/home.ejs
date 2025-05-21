@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-55G6CL815X"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
     gtag('config', 'G-55G6CL815X');
@@ -15,10 +16,13 @@
 
   <title>Best of Hokkien Mee Map</title>
   <link rel="stylesheet" href="css/style.css">
- </head>
+</head>
+
 <body>
-<p><h1>Best of Hokkien Mee Map</h1></p>
-<p>
+  <p>
+  <h1>Best of Hokkien Mee Map</h1>
+  </p>
+  <p>
   <div class="filters">
     <a href="filter?tag=wet">Wet</a>
     <a href="filter?tag=dry">Dry</a>
@@ -26,61 +30,61 @@
     <a href="filter?tag=cut chilli">Cut Chilli</a>
     <a href="filter?tag=wok hei">Wok Hei</a>
     <a href="filter?tag=lard">Pork Lard</a>
-    <a href="yourpicks">Top Picks by Fans</a> 
+    <a href="yourpicks">Top Picks by Fans</a>
   </div>
-</p>
+  </p>
   <main class="container">
-  <!-- Navbar which can be reused across other pages -->
+    <!-- Navbar which can be reused across other pages -->
     <%- include('../partials/navbar'); %>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script async
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
-</script>
-<script>
-  let map;
+      <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+      <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
+        </script>
+      <script>
+        let map;
 
-  function initMap() {
-    map = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: 1.3521, lng: 103.8198 }, // Singapore
-      zoom: 12
-    });
+        function initMap() {
+          map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 1.3521, lng: 103.8198 }, // Singapore
+            zoom: 12
+          });
 
-  fetch("files/HKMlocations.csv")
-      .then(response => {
-        if (!response.ok) throw new Error("Failed to load CSV");
-        return response.text();
-      })
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const data = results.data;
-            const listContainer = document.getElementById("location-list");
+          fetch("files/HKMlocations.csv")
+            .then(response => {
+              if (!response.ok) throw new Error("Failed to load CSV");
+              return response.text();
+            })
+            .then(csvText => {
+              Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                  const data = results.data;
+                  const listContainer = document.getElementById("location-list");
 
-            data.forEach(loc => {
-              if (!loc.lat || !loc.lng) return;
+                  data.forEach(loc => {
+                    if (!loc.lat || !loc.lng) return;
 
-              const lat = parseFloat(loc.lat);
-              const lng = parseFloat(loc.lng);
+                    const lat = parseFloat(loc.lat);
+                    const lng = parseFloat(loc.lng);
+                    const id = `loc-${index}`; // ADD THIS LINE
+                    const marker = new google.maps.Marker({
+                      position: { lat, lng },
+                      map: map,
+                      title: loc.name
+                    });
 
-              const marker = new google.maps.Marker({
-                position: { lat, lng },
-                map: map,
-                title: loc.name
-              });
+                    const infoWindow = new google.maps.InfoWindow({
+                      content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">Open in Google Maps</a>`
+                    });
 
-              const infoWindow = new google.maps.InfoWindow({
-                content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">Open in Google Maps</a>`
-              });
+                    marker.addListener("click", () => {
+                      infoWindow.open(map, marker);
+                    });
 
-              marker.addListener("click", () => {
-                infoWindow.open(map, marker);
-              });
-
-              const card = document.createElement("div");
-              card.className = "card";
-              card.innerHTML = `
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `
                 <h2>${loc.name}</h2>
                 <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
                 <p><strong>Description:</strong> ${loc.description}</p>
@@ -90,40 +94,39 @@
                 <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
                 <p><strong>Pre-order Info:</strong> ${loc.pre_order || "N/A"}</p>
                 <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
-                <button class="like-button" onclick="addLike('${id}')">
+            <button class="like-button" onclick="addLike('${id}')">
               ❤️ Like <span class="like-count" id="like-count-${id}">${getLikes(id)}</span>
-            </button>
+              </button>
               `;
-              listContainer.appendChild(card);
+                    listContainer.appendChild(card);
+                  });
+                },
+                error: err => {
+                  console.error("CSV parse error:", err);
+                }
+              });
+            })
+            .catch(err => {
+              console.error("CSV fetch error:", err);
             });
-          },
-          error: err => {
-            console.error("CSV parse error:", err);
-          }
-        });
-      })
-      .catch(err => {
-        console.error("CSV fetch error:", err);
-      });
-  }
+        }
 
-  function formatTags(tagString) {
-    if (!tagString) return "";
-    return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
-  }
- function getLikes(id) {
-      return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-    }
+        function formatTags(tagString) {
+          if (!tagString) return "";
+          return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+        }
+        function getLikes(id) {
+          return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+        }
 
-    function addLike(id) {
-      const current = getLikes(id);
-      localStorage.setItem(`likes_${id}`, current + 1);
-      document.getElementById(`like-count-${id}`).textContent = current + 1;
-    }
-</script>
-<div id="map"></div>
-<div class="location-list" id="location-list"></div>
-<script src="likes.js"></script>
+        function addLike(id) {
+          const current = getLikes(id);
+          localStorage.setItem(`likes_${id}`, current + 1);
+          document.getElementById(`like-count-${id}`).textContent = current + 1;
+        }
+      </script>
+      <div id="map"></div>
+      <div class="location-list" id="location-list"></div>
 </body>
+
 </html>
-  
