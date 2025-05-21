@@ -3,25 +3,32 @@
       margin: 0;
       background: #fffaf5;
     }
+
     h1 {
       text-align: center;
       color: #ff7f00;
       font-size: 2.5rem;
       margin: 1rem;
     }
+
     #map {
-  width: 80%;       /* Adjust this to your desired width (e.g., 100%, 90%, 600px) */
-  height: 60vh;     /* Keeps map tall enough for visibility */
-  margin: 0 auto;   /* Center the map horizontally */
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
+      width: 80%;
+      /* Adjust this to your desired width (e.g., 100%, 90%, 600px) */
+      height: 60vh;
+      /* Keeps map tall enough for visibility */
+      margin: 0 auto;
+      /* Center the map horizontally */
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
     .filters {
       display: flex;
       gap: 1rem;
       padding: 1rem;
       background: #fffaf5;
     }
+
     .filters a {
       padding: 0.5rem 1rem;
       background: #C70039;
@@ -29,17 +36,21 @@
       text-decoration: none;
       border-radius: 5px;
     }
+
     .filters a:hover {
       background: #900C3F;
     }
+
     .list {
       padding: 1rem;
     }
-        .location-list {
+
+    .location-list {
       padding: 1.5rem;
       max-width: 900px;
       margin: 0 auto;
     }
+
     .card {
       background: #fff;
       border: 1px solid #ddd;
@@ -48,6 +59,7 @@
       margin-bottom: 1rem;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
+
     .card h2 {
       margin: 0 0 0.5rem;
       color: #333;
@@ -60,6 +72,7 @@
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
     }
+
     .tags span {
       background: #ffeed0;
       color: #ff7f00;
@@ -69,36 +82,71 @@
       font-size: 0.85rem;
       display: inline-block;
     }
+
     .card a {
       color: #007bff;
       text-decoration: none;
     }
+
     .card a:hover {
       text-decoration: underline;
     }
 
-.about-container {
-    text-align: center;
+    .page-title {
+      font-size: 2.5rem;
+      color: #ff7f00;
+      /* Food orange */
+      text-align: center;
+      margin-top: 1rem;
+    }
 
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
+    .location-card {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem auto;
+      max-width: 600px;
+      background-color: #fffefa;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-.about-container > img{
-    margin-bottom: 40px;
-}
+    .like-button {
+      background-color: #ff7f00;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .like-count {
+      font-weight: bold;
+      margin-left: 0.5rem;
+    }
+
+    .about-container {
+      text-align: center;
+
+      margin-top: 50px;
+      margin-bottom: 50px;
+    }
+
+    .about-container>img {
+      margin-bottom: 40px;
+    }
 
 
-/* Always set the map height explicitly to define the size of the div
+    /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
-gmp-map {
-  height: 100%;
-}
+    gmp-map {
+      height: 100%;
+    }
 
-/* Optional: Makes the sample page fill the window. */
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+    /* Optional: Makes the sample page fill the window. */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }

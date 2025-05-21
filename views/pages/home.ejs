@@ -25,7 +25,8 @@
     <a href="filter?tag=sambal">Sambal</a>
     <a href="filter?tag=cut chilli">Cut Chilli</a>
     <a href="filter?tag=wok hei">Wok Hei</a>
-    <a href="filter?tag=lard">Pork Lard</a> 
+    <a href="filter?tag=lard">Pork Lard</a>
+    <a href="yourpicks">Top Picks by Fans</a> 
   </div>
 </p>
   <main class="container">
@@ -89,6 +90,9 @@
                 <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
                 <p><strong>Pre-order Info:</strong> ${loc.pre_order || "N/A"}</p>
                 <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
+                <button class="like-button" onclick="addLike('${id}')">
+              ❤️ Like <span class="like-count" id="like-count-${id}">${getLikes(id)}</span>
+            </button>
               `;
               listContainer.appendChild(card);
             });
@@ -107,11 +111,19 @@
     if (!tagString) return "";
     return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
   }
+ function getLikes(id) {
+      return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+    }
 
+    function addLike(id) {
+      const current = getLikes(id);
+      localStorage.setItem(`likes_${id}`, current + 1);
+      document.getElementById(`like-count-${id}`).textContent = current + 1;
+    }
 </script>
 <div id="map"></div>
 <div class="location-list" id="location-list"></div>
-
+<script src="likes.js"></script>
 </body>
 </html>
   

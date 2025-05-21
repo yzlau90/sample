@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Top Hokkien Mee by Fellow Fans</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+  <h1 class="page-title">Top Liked Hokkien Mee by Fellow Fans</h1>
+  <div id="ranking-list">Loading rankings...</div>
+
+  <script>
+    Papa.parse("files/HKMlocations.csv", {
+      header: true,
+      download: true,
+      complete: function(results) {
+        const data = results.data;
+
+        const enriched = data.map((loc, i) => {
+          const id = `loc-${i}`;
+          const likes = parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+          return { ...loc, id, likes };
+        });
+
+        enriched.sort((a, b) => b.likes - a.likes);
+
+        const container = document.getElementById("ranking-list");
+        container.innerHTML = '';
+
+        enriched.forEach((loc, index) => {
+          const card = document.createElement('div');
+          card.className = 'location-card';
+          card.innerHTML = `
+            <h2>#${index + 1} - ${loc.Name}</h2>
+            <p><strong>Likes:</strong> ${loc.likes}</p>
+            <p><strong>Location:</strong> ${loc.Location}</p>
+            <p><strong>Rating:</strong> ${loc.Rating} (${loc["Review Count"]} reviews)</p>
+            <a href="${loc["Google Map URL"]}" target="_blank">View on Google Maps</a>
+          `;
+          container.appendChild(card);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

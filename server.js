@@ -51,10 +51,9 @@ app.get('/filter', function (req, res) {
   res.render('pages/filter');
 });
 
-// New post page
-app.get('/new', function (req, res) {
-  res.render('pages/new');
+// Access Your Picks page
+app.get('/yourpicks', function (req, res) {
+  res.render('pages/yourpicks');
 });
-
 // Tells the app which port to run on
 app.listen(8080);
