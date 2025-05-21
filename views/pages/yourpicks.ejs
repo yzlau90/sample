@@ -1,47 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Top Hokkien Mee by Fellow Fans</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Picks by Fans</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1 class="page-title">Top Liked Hokkien Mee by Fellow Fans</h1>
-  <div id="ranking-list">Loading rankings...</div>
+  <h1>Top Picks by Fans</h1>
+  <div id="top-list"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
-    Papa.parse("files/HKMlocations.csv", {
-      header: true,
-      download: true,
-      complete: function(results) {
-        const data = results.data;
+    fetch("files/HKMlocations.csv")
+      .then(res => res.text())
+      .then(text => {
+        Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          complete: results => {
+            const data = results.data;
+            const topList = document.getElementById("top-list");
 
-        const enriched = data.map((loc, i) => {
-          const id = `loc-${i}`;
-          const likes = parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-          return { ...loc, id, likes };
+            // Assign IDs and Likes
+            data.forEach(loc => {
+              loc.id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+              loc.likes = parseInt(localStorage.getItem(`likes_${loc.id}`)) || 0;
+            });
+
+            // Sort descending by likes
+            data.sort((a, b) => b.likes - a.likes);
+
+            // Display only locations with > 0 likes
+            data.forEach(loc => {
+              if (loc.likes === 0) return;
+
+              const div = document.createElement("div");
+              div.className = "card";
+              div.innerHTML = `
+                <h2>${loc.name}</h2>
+                <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
+                <p><strong>Description:</strong> ${loc.description}</p>
+                <p><strong>Taste Profile:</strong> <span class="tags">${formatTags(loc.tags)}</span></p>
+                <p><strong>Location:</strong> ${loc.town}</p>
+                <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
+                <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
+                <p><strong>Pre-order Info:</strong> ${loc.pre_order || "N/A"}</p>
+                <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
+                `;
+              topList.appendChild(div);
+            });
+          }
         });
-
-        enriched.sort((a, b) => b.likes - a.likes);
-
-        const container = document.getElementById("ranking-list");
-        container.innerHTML = '';
-
-        enriched.forEach((loc, index) => {
-          const card = document.createElement('div');
-          card.className = 'location-card';
-          card.innerHTML = `
-            <h2>#${index + 1} - ${loc.Name}</h2>
-            <p><strong>Likes:</strong> ${loc.likes}</p>
-            <p><strong>Location:</strong> ${loc.Location}</p>
-            <p><strong>Rating:</strong> ${loc.Rating} (${loc["Review Count"]} reviews)</p>
-            <a href="${loc["Google Map URL"]}" target="_blank">View on Google Maps</a>
-          `;
-          container.appendChild(card);
-        });
-      }
-    });
+      });
   </script>
 </body>
 </html>

@@ -22,20 +22,20 @@
   <p>
   <h1>Best of Hokkien Mee Map</h1>
   </p>
-      <!-- Navbar which can be reused across other pages -->
-    <%- include('../partials/navbar'); %>
-  <p>
-  <div class="filters">
-    <a href="filter?tag=wet">Wet</a>
-    <a href="filter?tag=dry">Dry</a>
-    <a href="filter?tag=sambal">Sambal</a>
-    <a href="filter?tag=cut chilli">Cut Chilli</a>
-    <a href="filter?tag=wok hei">Wok Hei</a>
-    <a href="filter?tag=lard">Pork Lard</a>
-    <a href="yourpicks">Top Picks by Fans</a>
-  </div>
-  </p>
-  <main class="container">
+  <!-- Navbar which can be reused across other pages -->
+  <%- include('../partials/navbar'); %>
+    <p>
+    <div class="filters">
+      <a href="filter?tag=wet">Wet</a>
+      <a href="filter?tag=dry">Dry</a>
+      <a href="filter?tag=sambal">Sambal</a>
+      <a href="filter?tag=cut chilli">Cut Chilli</a>
+      <a href="filter?tag=wok hei">Wok Hei</a>
+      <a href="filter?tag=lard">Pork Lard</a>
+      <a href="yourpicks">Top Picks by Fans</a>
+    </div>
+    </p>
+    <main class="container">
 
       <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
       <script async
@@ -73,6 +73,7 @@
                 complete: (results) => {
                   const data = results.data;
                   const listContainer = document.getElementById("location-list");
+                  const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
 
                   data.forEach(loc => {
                     if (!loc.lat || !loc.lng) return;
@@ -125,7 +126,15 @@
           if (!tagString) return "";
           return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
         }
-        const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+        function getLikes(id) {
+          return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+        }
+
+        function addLike(id) {
+          const current = getLikes(id);
+          localStorage.setItem(`likes_${id}`, current + 1);
+          document.getElementById(`like-count-${id}`).textContent = current + 1;
+        }
       </script>
       <div id="map"></div>
       <div class="location-list" id="location-list"></div>
