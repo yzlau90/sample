@@ -110,16 +110,15 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    .like-button {
-      background-color: #ff7f00;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      margin-top: 0.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
+    button {
+  padding: 6px 12px;
+  background: orange;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+ 
     .like-count {
       font-weight: bold;
       margin-left: 0.5rem;
