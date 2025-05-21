@@ -117,4 +117,8 @@ app.get('/weather', async (req, res) => {
     }
   });
  
+// Tells the app to access filter page
+app.get('/filter', function(req, res) {
+  res.render('pages/filter');
+});  
 app.listen(8080);
