@@ -105,8 +105,9 @@
 
   function formatTags(tagString) {
     if (!tagString) return "";
-    return tagString.split(";").map(tag => `<span style='color:red'>${tag.trim()}</span>`).join(" ");
+    return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
   }
+
 </script>
 <div id="map"></div>
 <div id="location-list"></div>

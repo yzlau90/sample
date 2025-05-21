@@ -1,10 +1,21 @@
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
-      font-family: sans-serif;
+      background: #fffaf5;
+    }
+    h1 {
+      text-align: center;
+      color: #ff7f00;
+      font-size: 2.5rem;
+      margin: 1rem;
     }
     #map {
-      height: 60vh;
-    }
+  width: 80%;       /* Adjust this to your desired width (e.g., 100%, 90%, 600px) */
+  height: 60vh;     /* Keeps map tall enough for visibility */
+  margin: 0 auto;   /* Center the map horizontally */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
     .filters {
       display: flex;
       gap: 1rem;
@@ -24,11 +35,22 @@
     .list {
       padding: 1rem;
     }
+        .location-list {
+      padding: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
     .card {
-      border: 1px solid #ccc;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
       padding: 1rem;
-      border-radius: 8px;
       margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    .card h2 {
+      margin: 0 0 0.5rem;
+      color: #333;
     }
     .card h3 {
       margin-top: 0;
@@ -40,21 +62,22 @@
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
     }
-.new-post-btn-container{
-    text-align: center;
-
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
-
-.post-container {
-    max-width: 800px;
-
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    .tags span {
+      background: #ffeed0;
+      color: #ff7f00;
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      margin-right: 0.2rem;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+    .card a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .card a:hover {
+      text-decoration: underline;
+    }
 
 .about-container {
     text-align: center;
