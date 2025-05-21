@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-55G6CL815X"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-55G6CL815X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-  gtag('config', 'G-55G6CL815X');
-</script>
+    gtag('config', 'G-55G6CL815X');
+  </script>
 
   <title>Best of Hokkien Mee Map</title>
-
+  <link rel="stylesheet" href="css/style.css">
  </head>
 <body>
 <p><h1 style="color: #ff7f00; font-size: 3rem; font-weight: bold;">Best of Hokkien Mee Map</h1></p>
@@ -33,7 +33,7 @@
     <%- include('../partials/navbar'); %>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script async
-  src="https://maps.googleapis.com/maps/api/js?key=xxx&callback=initMap">
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
 </script>
 <script>
   let map;
@@ -44,7 +44,7 @@
       zoom: 12
     });
 
-  fetch("HKMlocations.csv")
+  fetch("files/HKMlocations.csv")
       .then(response => {
         if (!response.ok) throw new Error("Failed to load CSV");
         return response.text();
@@ -105,9 +105,11 @@
 
   function formatTags(tagString) {
     if (!tagString) return "";
-    return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+    return tagString.split(";").map(tag => `<span style='color:red'>${tag.trim()}</span>`).join(" ");
   }
 </script>
+<div id="map"></div>
+<div id="location-list"></div>
 
 </body>
 </html>

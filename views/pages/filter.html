@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Best Hokkien Mee by Taste Profile</title>
+  <title>Wet Hokkien Mee</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
@@ -63,7 +63,7 @@
 </head>
 <body>
 
-<h1>Filter Hokkien Mee by Taste Profile</h1>
+<h1>Best Hokkien Mee by Taste Profile</h1>
 
 <div class="filters">
   <button onclick="applyFilter('wet')">Wet</button>
@@ -90,7 +90,7 @@
       zoom: 12,
     });
 
-    fetch("HKMlocations.csv")
+    fetch("files/HKMlocations.csv")
       .then(res => res.text())
       .then(csv => {
         Papa.parse(csv, {
@@ -160,8 +160,9 @@
 
 <!-- Replace with your actual API key -->
 <script async
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHURE9HRAzI3MEV9rZJCJvO6I91mOHojo&callback=initMap">
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
 </script>
-
+<div id="map"></div>
+<div id="location-list"></div>
 </body>
 </html>

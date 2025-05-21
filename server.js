@@ -105,6 +105,7 @@ app.post("/delete/:id", async (req, res) => {
 app.get('/demo', function(req, res) {
   res.render('pages/demo');
 });
+
 // add this snippet before 
 app.get('/weather', async (req, res) => {
     try {
