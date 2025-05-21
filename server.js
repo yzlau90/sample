@@ -20,16 +20,8 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient();
 
 // Main landing page
-app.get("pages/home", (req, res) => {
+app.get("/home", (req, res) => {
   res.render("pages/home"); // Renders views/home.ejs
-});
-
-        // Render the homepage with all the blog posts
-        await res.render('pages/home', { blogs: blogs });
-      } catch (error) {
-        res.render('pages/home');
-        console.log(error);
-      } 
 });
 
 // About page
