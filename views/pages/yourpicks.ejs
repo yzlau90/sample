@@ -1,59 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Top Picks by Fans</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
+
 <body>
   <h1>Top Picks by Fans</h1>
   <a href="index.html">← Back to Map</a>
   <div id="top-picks-list" class="location-list"></div>
 
   <script>
-    function getLikes(id) {
-      return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-    }
+    let map;
 
-    function generateId(loc) {
-      return loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
-    }
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 1.3521, lng: 103.8198 }, // Singapore
+        zoom: 12
+      });
+      function getLikes(id) {
+        return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+      }
 
-    function formatTags(tagString) {
-      if (!tagString) return "";
-      return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
-    }
+      function generateId(loc) {
+        return loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+      }
 
-    fetch("files/HKMlocations.csv")
-      .then(response => {
-        if (!response.ok) throw new Error("Failed to load CSV");
-        return response.text();
-      })
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const data = results.data;
+      function formatTags(tagString) {
+        if (!tagString) return "";
+        return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+      }
 
-            // Attach like counts
-            data.forEach(loc => {
-              loc.id = generateId(loc);
-              loc.likes = getLikes(loc.id);
-            });
+      fetch("files/HKMlocations.csv")
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to load CSV");
+          return response.text();
+        })
+        .then(csvText => {
+          Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (results) => {
+              const data = results.data;
 
-            // Sort by likes in descending order
-            const sorted = data
-              .filter(loc => loc.likes > 0) // Only show liked locations
-              .sort((a, b) => b.likes - a.likes);
+              // Attach like counts
+              data.forEach(loc => {
+                if (!loc.lat || !loc.lng) return;
+                const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
 
-            const container = document.getElementById("top-picks-list");
-            sorted.forEach(loc => {
-              const card = document.createElement("div");
-              card.className = "card";
-              card.innerHTML = `
+                loc.id = generateId(loc);
+                loc.likes = getLikes(loc.id);
+              });
+
+              // Sort by likes in descending order
+              const sorted = data
+                .filter(loc => loc.likes > 0) // Only show liked locations
+                .sort((a, b) => b.likes - a.likes);
+
+              const container = document.getElementById("top-picks-list");
+              sorted.forEach(loc => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
                 <h2>${loc.name}</h2>
                 <p><strong>Likes:</strong> ${loc.likes}</p>
                 <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
@@ -64,16 +76,18 @@
                 <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
                 <p><a href="${loc.google_maps_url}" target="_blank">📍 Open in Google Maps</a></p>
               `;
-              container.appendChild(card);
-            });
+                container.appendChild(card);
+              });
 
-            if (sorted.length === 0) {
-              container.innerHTML = "<p>No likes yet. Start liking your favourite spots on the map!</p>";
+              if (sorted.length === 0) {
+                container.innerHTML = "<p>No likes yet. Start liking your favourite spots on the map!</p>";
+              }
             }
-          }
-        });
-      })
-      .catch(err => console.error("Error loading top picks:", err));
+          });
+        })
+        .catch(err => console.error("Error loading top picks:", err));
+    }
   </script>
 </body>
+
 </html>
