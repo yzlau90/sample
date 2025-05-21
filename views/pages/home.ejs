@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-55G6CL815X"></script>
+
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
@@ -41,17 +42,7 @@
       <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
         </script>
-      <script>
-        function getLikes(id) {
-          return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-        }
-
-        function addLike(id) {
-          const current = getLikes(id);
-          localStorage.setItem(`likes_${id}`, current + 1);
-          document.getElementById(`like-count-${id}`).textContent = current + 1;
-        }
-      </script>
+      
       <script>
         let map;
 
@@ -73,13 +64,15 @@
                 complete: (results) => {
                   const data = results.data;
                   const listContainer = document.getElementById("location-list");
-                  const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+                
 
                   data.forEach(loc => {
                     if (!loc.lat || !loc.lng) return;
-
+                    const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+                   
                     const lat = parseFloat(loc.lat);
                     const lng = parseFloat(loc.lng);
+                  
 
                     const marker = new google.maps.Marker({
                       position: { lat, lng },
@@ -128,6 +121,22 @@
         }
         
       </script>
+<script>
+function getLikes(id) {
+    return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+  }
+
+  function addLike(id) {
+    const currentLikes = getLikes(id);
+    const newLikes = currentLikes + 1;
+    localStorage.setItem(`likes_${id}`, newLikes);
+
+    const likeSpan = document.getElementById(`like-count-${id}`);
+    if (likeSpan) {
+      likeSpan.textContent = newLikes;
+    }
+  }
+</script>
       <div id="map"></div>
       <div class="location-list" id="location-list"></div>
 
