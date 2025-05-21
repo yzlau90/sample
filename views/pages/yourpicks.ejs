@@ -5,54 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Top Picks by Fans</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
 <body>
   <h1>Top Picks by Fans</h1>
-  <div id="top-list"></div>
+  <a href="index.html">← Back to Map</a>
+  <div id="top-picks-list" class="location-list"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
+    function getLikes(id) {
+      return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+    }
+
+    function generateId(loc) {
+      return loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+    }
+
+    function formatTags(tagString) {
+      if (!tagString) return "";
+      return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+    }
+
     fetch("files/HKMlocations.csv")
-      .then(res => res.text())
-      .then(text => {
-        Papa.parse(text, {
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to load CSV");
+        return response.text();
+      })
+      .then(csvText => {
+        Papa.parse(csvText, {
           header: true,
           skipEmptyLines: true,
-          complete: results => {
+          complete: (results) => {
             const data = results.data;
-            const topList = document.getElementById("top-list");
 
-            // Assign IDs and Likes
+            // Attach like counts
             data.forEach(loc => {
-              loc.id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
-              loc.likes = parseInt(localStorage.getItem(`likes_${loc.id}`)) || 0;
+              loc.id = generateId(loc);
+              loc.likes = getLikes(loc.id);
             });
 
-            // Sort descending by likes
-            data.sort((a, b) => b.likes - a.likes);
+            // Sort by likes in descending order
+            const sorted = data
+              .filter(loc => loc.likes > 0) // Only show liked locations
+              .sort((a, b) => b.likes - a.likes);
 
-            // Display only locations with > 0 likes
-            data.forEach(loc => {
-              if (loc.likes === 0) return;
-
-              const div = document.createElement("div");
-              div.className = "card";
-              div.innerHTML = `
+            const container = document.getElementById("top-picks-list");
+            sorted.forEach(loc => {
+              const card = document.createElement("div");
+              card.className = "card";
+              card.innerHTML = `
                 <h2>${loc.name}</h2>
+                <p><strong>Likes:</strong> ${loc.likes}</p>
                 <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
                 <p><strong>Description:</strong> ${loc.description}</p>
                 <p><strong>Taste Profile:</strong> <span class="tags">${formatTags(loc.tags)}</span></p>
                 <p><strong>Location:</strong> ${loc.town}</p>
                 <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
                 <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
-                <p><strong>Pre-order Info:</strong> ${loc.pre_order || "N/A"}</p>
-                <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
-                `;
-              topList.appendChild(div);
+                <p><a href="${loc.google_maps_url}" target="_blank">📍 Open in Google Maps</a></p>
+              `;
+              container.appendChild(card);
             });
+
+            if (sorted.length === 0) {
+              container.innerHTML = "<p>No likes yet. Start liking your favourite spots on the map!</p>";
+            }
           }
         });
-      });
+      })
+      .catch(err => console.error("Error loading top picks:", err));
   </script>
 </body>
 </html>
