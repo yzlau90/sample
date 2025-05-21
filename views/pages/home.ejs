@@ -126,15 +126,7 @@
           if (!tagString) return "";
           return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
         }
-        function getLikes(id) {
-          return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-        }
-
-        function addLike(id) {
-          const current = getLikes(id);
-          localStorage.setItem(`likes_${id}`, current + 1);
-          document.getElementById(`like-count-${id}`).textContent = current + 1;
-        }
+        
       </script>
       <div id="map"></div>
       <div class="location-list" id="location-list"></div>
