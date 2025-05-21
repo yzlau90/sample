@@ -46,17 +46,6 @@ app.get('/about', function (req, res) {
   res.render('pages/about');
 });
 
-// add this snippet before 
-app.get('/weather', async (req, res) => {
-  try {
-    const response = await axios.get('https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast');
-    res.render('pages/weather', { weather: response.data });
-  } catch (error) {
-    console.error(error);
-    res.send('Error fetching weather data');
-  }
-});
-
 // Access Filter page
 app.get('/filter', function (req, res) {
   res.render('pages/filter');
@@ -65,60 +54,6 @@ app.get('/filter', function (req, res) {
 // New post page
 app.get('/new', function (req, res) {
   res.render('pages/new');
-});
-
-// Create a new post
-app.post('/new', async function (req, res) {
-
-  // Try-Catch for any errors
-  try {
-    const response = await axios.get('https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast');
-    res.render('pages/weather', { weather: response.data });
-    // Get the title and content from submitted form
-    const { title, content } = req.body;
-
-    // Reload page if empty title or content
-    if (!title || !content) {
-      console.log("Unable to create new post, no title or content");
-      res.render('pages/new');
-    } else {
-      // Create post and store in database
-      const blog = await prisma.post.create({
-        data: { title, content },
-      });
-
-      // Redirect back to the homepage
-      res.redirect('/');
-    }
-  } catch (error) {
-    console.log(error);
-    res.render('pages/new');
-  }
-
-});
-
-// Delete a post by id
-app.post("/delete/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    await prisma.post.delete({
-      where: { id: parseInt(id) },
-    });
-
-    // Redirect back to the homepage
-    res.redirect('/');
-  } catch (error) {
-    console.error(error);
-    res.send('Error fetching weather data');
-    console.log(error);
-    res.redirect('/');
-  }
-});
-
-// Tells the app to access filter page
-app.get('/filter', function (req, res) {
-  res.render('pages/filter');
 });
 
 // Tells the app which port to run on
