@@ -11,61 +11,68 @@
 
 <body>
   <h1>Top Picks by Fans</h1>
-  <a href="/">← Back to Hokkien Mee Map</a>
-  <div id="top-picks-list" class="location-list"></div>
+  <!-- Navbar which can be reused across other pages -->
+  <%- include('../partials/navbar'); %>
+    <script async
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
+      </script>
+    <div id="map"></div>
+    <div id="top-picks-list" class="location-list"></div>
 
-  <script>
-    let map;
+    <script>
+      let map;
 
-    function initMap() {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 1.3521, lng: 103.8198 }, // Singapore
-        zoom: 12
-      });
-      function getLikes(id) {
-        return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-      }
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 1.3521, lng: 103.8198 }, // Singapore
+          zoom: 12
+        });
+        function getLikes(id) {
+          return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+        }
 
-      function generateId(loc) {
-        return loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
-      }
+        function generateId(loc) {
+          const name = (loc.name || "").trim().toLowerCase().replace(/\s+/g, '_');
+          const town = (loc.town || "").trim().toLowerCase().replace(/\s+/g, '_');
+          return `${name}_${town}`;
+        }
 
-      function formatTags(tagString) {
-        if (!tagString) return "";
-        return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
-      }
+        function formatTags(tagString) {
+          if (!tagString) return "";
+          return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+        }
 
-      fetch("files/HKMlocations.csv")
-        .then(response => {
-          if (!response.ok) throw new Error("Failed to load CSV");
-          return response.text();
-        })
-        .then(csvText => {
-          Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => {
-              const data = results.data;
+        fetch("files/HKMlocations.csv")
+          .then(response => {
+            if (!response.ok) throw new Error("Failed to load CSV");
+            return response.text();
+          })
+          .then(csvText => {
+            Papa.parse(csvText, {
+              header: true,
+              skipEmptyLines: true,
+              complete: (results) => {
+                const data = results.data;
 
-              // Attach like counts
-              data.forEach(loc => {
-                if (!loc.lat || !loc.lng) return;
-                const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+                // Attach like counts
+                data.forEach(loc => {
+                  if (!loc.lat || !loc.lng) return;
+                  const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
 
-                loc.id = generateId(loc);
-                loc.likes = getLikes(loc.id);
-              });
+                  loc.id = generateId(loc);
+                  loc.likes = getLikes(loc.id);
+                });
 
-              // Sort by likes in descending order
-              const sorted = data
-                .filter(loc => loc.likes > 0) // Only show liked locations
-                .sort((a, b) => b.likes - a.likes);
+                // Sort by likes in descending order
+                const sorted = data
+                  .filter(loc => loc.likes > 0) // Only show liked locations
+                  .sort((a, b) => b.likes - a.likes);
 
-              const container = document.getElementById("top-picks-list");
-              sorted.forEach(loc => {
-                const card = document.createElement("div");
-                card.className = "card";
-                card.innerHTML = `
+                const container = document.getElementById("top-picks-list");
+                sorted.forEach(loc => {
+                  const card = document.createElement("div");
+                  card.className = "card";
+                  card.innerHTML = `
                 <h2>${loc.name}</h2>
                 <p><strong>Likes:</strong> ${loc.likes}</p>
                 <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
@@ -74,29 +81,31 @@
                 <p><strong>Location:</strong> ${loc.town}</p>
                 <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
                 <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
-                <p><a href="${loc.google_maps_url}" target="_blank">📍 Open in Google Maps</a></p>
+                <p><strong>Don't want to queue?</strong> ${loc.pre_order && loc.pre_order.trim() ? loc.pre_order : "N/A"}</p>
+                <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
               `;
-                container.appendChild(card);
-              });
+                  container.appendChild(card);
+                });
 
-              if (sorted.length === 0) {
-                container.innerHTML = "<p>No likes yet. Start liking your favourite spots on the map!</p>";
+                if (sorted.length === 0) {
+                  container.innerHTML = "<p>No likes yet. Start liking your favourite spots on the map!</p>";
+                }
               }
-            }
-          });
-        })
-        .catch(err => console.error("Error loading top picks:", err));
-    }
-  </script>
-  <footer class="disclaimer-footer">
-    <p>
-      <strong>Disclaimer:</strong><br>
-      This website is created for learning purposes only. The information provided here should not be considered
-      professional advice. Please note that we make no guarantees regarding the accuracy, completeness, or reliability
-      of the contents of this website. Any actions you take based on the contents of this website are at your own risk.
-      We are not liable for any losses or damages incurred from the use of this website.
-    </p>
-  </footer>
+            });
+          })
+          .catch(err => console.error("Error loading top picks:", err));
+      }
+    </script>
+    <footer class="disclaimer-footer">
+      <p>
+        <strong>Disclaimer:</strong><br>
+        This website is created for learning purposes only. The information provided here should not be considered
+        professional advice. Please note that we make no guarantees regarding the accuracy, completeness, or reliability
+        of the contents of this website. Any actions you take based on the contents of this website are at your own
+        risk.
+        We are not liable for any losses or damages incurred from the use of this website.
+      </p>
+    </footer>
 </body>
 
 </html>

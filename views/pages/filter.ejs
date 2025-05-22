@@ -66,8 +66,8 @@
 
           const lat = parseFloat(loc.lat);
           const lng = parseFloat(loc.lng);
-          const id = (loc.name + "_" + loc.town).replace(/\s+/g, '_');
-          
+          const id = generateId(loc);
+
           const marker = new google.maps.Marker({
             position: { lat, lng },
             map,
@@ -93,7 +93,7 @@
         <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
         <p><strong>Don't want to queue?</strong> ${loc.pre_order && loc.pre_order.trim() ? loc.pre_order : "N/A"}</p>
         <p><a href="${loc.google_maps_url}" target="_blank">📍 Google Maps</a></p>
-        <p><button onclick="addLike('${id}')">❤️ Like (<span id="like-count-${id}">${getLikes('${id}')}</span>)</button></p>
+        <p><button onclick="addLike('${id}')">❤️ Like (<span id="like-count-${id}">${getLikes(id)}</span>)</button></p>
 
       `;
           listContainer.appendChild(card);
@@ -106,6 +106,11 @@
       }
     </script>
     <script>
+      function generateId(loc) {
+        const name = (loc.name || "").trim().toLowerCase().replace(/\s+/g, '_');
+        const town = (loc.town || "").trim().toLowerCase().replace(/\s+/g, '_');
+        return `${name}_${town}`;
+      }
       function getLikes(id) {
         return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
       }

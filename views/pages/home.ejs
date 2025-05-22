@@ -61,8 +61,15 @@
       <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
         </script>
-
       <script>
+        function generateId(loc) {
+          const name = (loc.name || "").trim().toLowerCase().replace(/\s+/g, '_');
+          const town = (loc.town || "").trim().toLowerCase().replace(/\s+/g, '_');
+          return `${name}_${town}`;
+        }
+      </script>
+      <script>
+
         let map;
 
         function initMap() {
@@ -87,7 +94,7 @@
 
                   data.forEach(loc => {
                     if (!loc.lat || !loc.lng) return;
-                    const id = loc.name.replace(/\s+/g, '_') + "_" + loc.town.replace(/\s+/g, '_');
+                    const id = generateId(loc);
 
                     const lat = parseFloat(loc.lat);
                     const lng = parseFloat(loc.lng);
