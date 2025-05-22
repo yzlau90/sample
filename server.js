@@ -55,5 +55,22 @@ app.get('/filter', function (req, res) {
 app.get('/yourpicks', function (req, res) {
   res.render('pages/yourpicks');
 });
+
+
+function getLikes(id) {
+  return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+}
+
+function addLike(id) {
+  const currentLikes = getLikes(id);
+  const newLikes = currentLikes + 1;
+  localStorage.setItem(`likes_${id}`, newLikes);
+
+  const likeSpan = document.getElementById(`like-count-${id}`);
+  if (likeSpan) {
+    likeSpan.textContent = newLikes;
+  }
+}
+
 // Tells the app which port to run on
 app.listen(8080);

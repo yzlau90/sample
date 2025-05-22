@@ -23,6 +23,7 @@
     }
 
     .filters {
+      font-weight: bold;
       display: flex;
       gap: 1rem;
       padding: 1rem;
@@ -30,6 +31,7 @@
     }
 
     .filters a {
+      font-weight: bold;
       padding: 0.5rem 1rem;
       background: #C70039;
       color: white;
@@ -150,6 +152,43 @@
       color: #000;
     }
 
+  .banner-container {
+      overflow: hidden;
+      white-space: nowrap;
+      background-color: #f5e6d0;
+      padding: 20px 0;
+      border-top: 4px solid #ff9800;
+      border-bottom: 4px solid #ff9800;
+    }
+
+    .rolling-banner {
+      display: inline-block;
+      animation: scroll 30s linear infinite;
+    }
+
+    .rolling-banner img {
+      height: 150px;
+      margin: 0 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      object-fit: cover;
+    }
+
+    @keyframes scroll {
+      from {
+        transform: translateX(0%);
+      }
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* Optional: Make sure it loops seamlessly */
+    .rolling-banner::after {
+      content: "";
+      display: inline-block;
+      width: 100%;
+    }
     /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
     gmp-map {

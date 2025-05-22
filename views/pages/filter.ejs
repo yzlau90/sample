@@ -88,8 +88,9 @@
         <p><strong>Location:</strong> ${loc.town}</p>
         <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
         <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
-        <p><strong>Pre-order:</strong> ${loc.pre_order || "N/A"}</p>
+        <p><strong>Don't want to queue?</strong> ${loc.pre_order || "N/A"}</p>
         <p><a href="${loc.google_maps_url}" target="_blank">📍 Google Maps</a></p>
+        <p><button onclick="addLike('${id}')">❤️ Like (<span id="like-count-${id}">${getLikes(id)}</span>)</button></p>
       `;
       listContainer.appendChild(card);
     });
