@@ -54,17 +54,7 @@
   </p>
   <!-- Navbar which can be reused across other pages -->
   <%- include('../partials/navbar'); %>
-    <p>
-    <div class="filters">
-      <a href="filter?tag=wet">Wet</a>
-      <a href="filter?tag=dry">Dry</a>
-      <a href="filter?tag=sambal">Sambal</a>
-      <a href="filter?tag=cut chilli">Cut Chilli</a>
-      <a href="filter?tag=wok hei">Wok Hei</a>
-      <a href="filter?tag=lard">Pork Lard</a>
-      <a href="yourpicks">Top Picks by Fans</a>
-    </div>
-    </p>
+
     <main class="container">
 
       <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -127,7 +117,7 @@
                 <p><strong>Location:</strong> ${loc.town}</p>
                 <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
                 <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
-                <p><strong>Don't want to queue?</strong> ${loc.pre_order || "N/A"}</p>
+                <p><strong>Don't want to queue?</strong> ${loc.pre_order && loc.pre_order.trim() ? loc.pre_order : "N/A"}</p>
                 <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
                 <p><button onclick="addLike('${id}')">❤️ Like (<span id="like-count-${id}">${getLikes(id)}</span>)</button></p>
               `;
@@ -149,6 +139,22 @@
           return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
         }
 
+      </script>
+      <script>
+        function getLikes(id) {
+          return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+        }
+
+        function addLike(id) {
+          const currentLikes = getLikes(id);
+          const newLikes = currentLikes + 1;
+          localStorage.setItem(`likes_${id}`, newLikes);
+
+          const likeSpan = document.getElementById(`like-count-${id}`);
+          if (likeSpan) {
+            likeSpan.textContent = newLikes;
+          }
+        }
       </script>
 
       <div id="map"></div>

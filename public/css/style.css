@@ -51,6 +51,8 @@
       padding: 1.5rem;
       max-width: 900px;
       margin: 0 auto;
+      display: block;
+      color: #333;
     }
 
     .card {
@@ -137,6 +139,23 @@
       margin-bottom: 40px;
     }
 
+    .about-link {
+      text-align: right;
+      margin: 10px 20px;
+      font-size: 1.1rem;
+    }
+
+    .about-link a {
+      padding: 6px 12px;
+      background: orange;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .about-link a:hover {
+      text-decoration: underline;
+    }
+
     .disclaimer-footer {
       background-color: #f5f5f5;
       color: #444;
@@ -152,7 +171,7 @@
       color: #000;
     }
 
-  .banner-container {
+    .banner-container {
       overflow: hidden;
       white-space: nowrap;
       background-color: #f5e6d0;
@@ -178,6 +197,7 @@
       from {
         transform: translateX(0%);
       }
+
       to {
         transform: translateX(-50%);
       }
@@ -189,6 +209,7 @@
       display: inline-block;
       width: 100%;
     }
+
     /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
     gmp-map {
