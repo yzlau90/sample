@@ -145,20 +145,26 @@
         const town = (loc.town || "").trim().toLowerCase().replace(/\s+/g, '_');
         return `${name}_${town}`;
       }
-      function getLikes(id) {
-        return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-      }
+     function getLikes(id) {
+    return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+  }
 
-      function addLike(id) {
-        const currentLikes = getLikes(id);
-        const newLikes = currentLikes + 1;
-        localStorage.setItem(`likes_${id}`, newLikes);
+  function addLike(id) {
+    const likedKey = `liked_${id}`;
+    if (localStorage.getItem(likedKey)) {
+      alert("You've already liked this location!");
+      return;
+    }
 
-        const likeSpan = document.getElementById(`like-count-${id}`);
-        if (likeSpan) {
-          likeSpan.textContent = newLikes;
-        }
-      }
+    const newLikes = getLikes(id) + 1;
+    localStorage.setItem(`likes_${id}`, newLikes);
+    localStorage.setItem(likedKey, "true"); // Prevent multiple likes
+
+    const likeSpan = document.getElementById(`like-count-${id}`);
+    if (likeSpan) {
+      likeSpan.textContent = newLikes;
+    }
+  }
 
     </script>
     <!-- Replace with your actual Google Maps API key -->

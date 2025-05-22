@@ -167,9 +167,15 @@
         }
 
         function addLike(id) {
-          const currentLikes = getLikes(id);
-          const newLikes = currentLikes + 1;
+          const likedKey = `liked_${id}`;
+          if (localStorage.getItem(likedKey)) {
+            alert("You've already liked this location!");
+            return;
+          }
+
+          const newLikes = getLikes(id) + 1;
           localStorage.setItem(`likes_${id}`, newLikes);
+          localStorage.setItem(likedKey, "true"); // Prevent multiple likes
 
           const likeSpan = document.getElementById(`like-count-${id}`);
           if (likeSpan) {
