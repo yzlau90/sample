@@ -163,7 +163,13 @@
           }
         }
       </script>
-
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          document.querySelectorAll("[id^='like-count-']").forEach(span => {
+            const id = span.id.replace("like-count-", "");
+            span.textContent = getLikes(id);
+          });
+      </script>
       <div id="map"></div>
       <div class="location-list" id="location-list"></div>
       <footer class="disclaimer-footer">

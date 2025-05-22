@@ -56,11 +56,5 @@ app.get('/yourpicks', function (req, res) {
   res.render('pages/yourpicks');
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("[id^='like-count-']").forEach(span => {
-    const id = span.id.replace("like-count-", "");
-    span.textContent = getLikes(id);
-  });
-});
 // Tells the app which port to run on
 app.listen(8080);
