@@ -91,8 +91,22 @@
                   const data = results.data;
                   const listContainer = document.getElementById("location-list");
 
+                  const sortedData = data
+                    .filter(loc => loc.review_count && loc.rating) // ensure both values exist
+                    .sort((a, b) => {
+                      const reviewsA = parseInt(a.review_count) || 0;
+                      const reviewsB = parseInt(b.review_count) || 0;
+                      const ratingA = parseFloat(a.rating) || 0;
+                      const ratingB = parseFloat(b.rating) || 0;
 
-                  data.forEach(loc => {
+                      if (reviewsB !== reviewsA) {
+                        return reviewsB - reviewsA; // Sort by most reviews first
+                      } else {
+                        return ratingB - ratingA;   // If same reviews, sort by highest rating
+                      }
+                    });
+
+                  sortedData.forEach(loc => {
                     if (!loc.lat || !loc.lng) return;
                     const id = generateId(loc);
 
@@ -169,6 +183,7 @@
             const id = span.id.replace("like-count-", "");
             span.textContent = getLikes(id);
           });
+        });
       </script>
       <div id="map"></div>
       <div class="location-list" id="location-list"></div>
