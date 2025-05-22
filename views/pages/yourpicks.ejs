@@ -69,7 +69,28 @@
                   .sort((a, b) => b.likes - a.likes);
 
                 const container = document.getElementById("top-picks-list");
+                const bounds = new google.maps.LatLngBounds();
                 sorted.forEach(loc => {
+                  const lat = parseFloat(loc.lat);
+                  const lng = parseFloat(loc.lng);
+                  // Add marker to the map
+                  const marker = new google.maps.Marker({
+                    position: { lat, lng },
+                    map: map,
+                    title: loc.name
+                  });
+
+                  const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">Open in Google Maps</a>`
+                  });
+
+                  marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                  });
+
+                  // Extend map bounds
+                  bounds.extend({ lat, lng });
+
                   const card = document.createElement("div");
                   card.className = "card";
                   card.innerHTML = `
