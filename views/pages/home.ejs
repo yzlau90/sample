@@ -51,10 +51,15 @@
       <img src="/images/hkm12.jpg" alt="Hokkien Mee 12">
     </div>
   </div>
-  </p>
+  
   <!-- Navbar which can be reused across other pages -->
   <%- include('../partials/navbar'); %>
-
+<div class="town-filter-container">
+  <label for="townFilter"><strong>Filter by Town:</strong></label>
+  <select id="townFilter">
+    <option value="all">All</option>
+  </select>
+</div>
     <main class="container">
 
       <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -88,108 +93,131 @@
                 header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
-                  const data = results.data;
+                  const data = results.data.filter(loc => loc.lat && loc.lng);
                   const listContainer = document.getElementById("location-list");
+                  const townFilter = document.getElementById("townFilter");
 
-                  const sortedData = data
-                    .filter(loc => loc.review_count && loc.rating) // ensure both values exist
-                    .sort((a, b) => {
+                  // Populate town dropdown with unique towns
+                  const towns = [...new Set(data.map(loc => loc.town).filter(Boolean))].sort();
+                  towns.forEach(town => {
+                    const option = document.createElement("option");
+                    option.value = town;
+                    option.textContent = town;
+                    townFilter.appendChild(option);
+                  });
+
+                  // Store all markers so we can remove them during filtering
+                  const markers = [];
+
+                  function renderLocations(locations) {
+                    // Sort by review count first, then by rating
+                    const sorted = locations.sort((a, b) => {
                       const reviewsA = parseInt(a.review_count) || 0;
                       const reviewsB = parseInt(b.review_count) || 0;
                       const ratingA = parseFloat(a.rating) || 0;
                       const ratingB = parseFloat(b.rating) || 0;
 
                       if (reviewsB !== reviewsA) {
-                        return reviewsB - reviewsA; // Sort by most reviews first
+                        return reviewsB - reviewsA;
                       } else {
-                        return ratingB - ratingA;   // If same reviews, sort by highest rating
+                        return ratingB - ratingA;
                       }
                     });
 
-                  sortedData.forEach(loc => {
-                    if (!loc.lat || !loc.lng) return;
-                    const id = generateId(loc);
+                    // Clear previous content
+                    listContainer.innerHTML = "";
 
-                    const lat = parseFloat(loc.lat);
-                    const lng = parseFloat(loc.lng);
+                    // Remove all existing markers from the map
+                    markers.forEach(m => m.setMap(null));
+                    markers.length = 0;
 
+                    // Render each sorted location
+                    sorted.forEach(loc => {
+                      const id = generateId(loc);
+                      const lat = parseFloat(loc.lat);
+                      const lng = parseFloat(loc.lng);
 
-                    const marker = new google.maps.Marker({
-                      position: { lat, lng },
-                      map: map,
-                      title: loc.name
+                      const marker = new google.maps.Marker({
+                        position: { lat, lng },
+                        map: map,
+                        title: loc.name
+                      });
+                      markers.push(marker);
+
+                      const infoWindow = new google.maps.InfoWindow({
+                        content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">Open in Google Maps</a>`
+                      });
+
+                      marker.addListener("click", () => {
+                        infoWindow.open(map, marker);
+                      });
+
+                      const card = document.createElement("div");
+                      card.className = "card";
+                      card.innerHTML = `
+      <h2>${loc.name}</h2>
+      <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
+      <p><strong>Description:</strong> ${loc.description}</p>
+      <p><strong>Taste Profile:</strong> <span class="tags">${formatTags(loc.tags)}</span></p>
+      <p><strong>Location:</strong> ${loc.town}</p>
+      <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
+      <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
+      <p><strong>Don't want to queue?</strong> ${loc.pre_order && loc.pre_order.trim() ? loc.pre_order : "N/A"}</p>
+      <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
+      <p><button onclick="addLike('${id}')">❤️ Like (<span id="like-count-${id}">${getLikes(id)}</span>)</button></p>
+    `;
+                      listContainer.appendChild(card);
                     });
+                  }
 
-                    const infoWindow = new google.maps.InfoWindow({
-                      content: `<strong>${loc.name}</strong><br><a href="${loc.google_maps_url}" target="_blank">Open in Google Maps</a>`
-                    });
+                  // Initial render
+                  renderLocations(data);
 
-                    marker.addListener("click", () => {
-                      infoWindow.open(map, marker);
-                    });
-
-                    const card = document.createElement("div");
-                    card.className = "card";
-                    card.innerHTML = `
-                <h2>${loc.name}</h2>
-                <p><strong>Rating:</strong> ${loc.rating} ⭐ (${loc.review_count} reviews)</p>
-                <p><strong>Description:</strong> ${loc.description}</p>
-                <p><strong>Taste Profile:</strong> <span class="tags">${formatTags(loc.tags)}</span></p>
-                <p><strong>Location:</strong> ${loc.town}</p>
-                <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
-                <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
-                <p><strong>Don't want to queue?</strong> ${loc.pre_order && loc.pre_order.trim() ? loc.pre_order : "N/A"}</p>
-                <p><a href="${loc.google_maps_url}" target="_blank">📍 Save on Google Maps</a></p>
-                <p><button onclick="addLike('${id}')">❤️ Like (<span id="like-count-${id}">${getLikes(id)}</span>)</button></p>
-              `;
-                    listContainer.appendChild(card);
+                  // Filter on town dropdown change
+                  townFilter.addEventListener("change", () => {
+                    const selectedTown = townFilter.value;
+                    const filtered = selectedTown === "all"
+                      ? data
+                      : data.filter(loc => loc.town === selectedTown);
+                    renderLocations(filtered);
                   });
-                },
-                error: err => {
-                  console.error("CSV parse error:", err);
                 }
               });
-            })
-            .catch(err => {
-              console.error("CSV fetch error:", err);
-            });
-        }
-
-        function formatTags(tagString) {
-          if (!tagString) return "";
-          return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
-        }
-
+            })};
       </script>
       <script>
-        function getLikes(id) {
-          return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
-        }
+              function formatTags(tagString) {
+                if (!tagString) return "";
+                return tagString.split(";").map(tag => `<span>${tag.trim()}</span>`).join(" ");
+              }
+              function getLikes(id) {
+                return parseInt(localStorage.getItem(`likes_${id}`)) || 0;
+              }
 
-        function addLike(id) {
-          const likedKey = `liked_${id}`;
-          if (localStorage.getItem(likedKey)) {
-            alert("You've already liked this location!");
-            return;
-          }
+              function addLike(id) {
+                const likedKey = `liked_${id}`;
+                if (localStorage.getItem(likedKey)) {
+                  alert("You've already liked this location!");
+                  return;
+                }
 
-          const newLikes = getLikes(id) + 1;
-          localStorage.setItem(`likes_${id}`, newLikes);
-          localStorage.setItem(likedKey, "true"); // Prevent multiple likes
+                const newLikes = getLikes(id) + 1;
+                localStorage.setItem(`likes_${id}`, newLikes);
+                localStorage.setItem(likedKey, "true"); // Prevent multiple likes
 
-          const likeSpan = document.getElementById(`like-count-${id}`);
-          if (likeSpan) {
-            likeSpan.textContent = newLikes;
-          }
-        }
+                const likeSpan = document.getElementById(`like-count-${id}`);
+                if (likeSpan) {
+                  likeSpan.textContent = newLikes;
+                }
+              }
       </script>
       <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          document.querySelectorAll("[id^='like-count-']").forEach(span => {
-            const id = span.id.replace("like-count-", "");
-            span.textContent = getLikes(id);
-          });
-        });
+              document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll("[id^='like-count-']").forEach(span => {
+                  const id = span.id.replace("like-count-", "");
+                  span.textContent = getLikes(id);
+                });
+              });
       </script>
       <div id="map"></div>
       <div class="location-list" id="location-list"></div>

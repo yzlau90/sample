@@ -193,6 +193,33 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       object-fit: cover;
     }
+.town-filter-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem 2rem;
+  background-color: #ffe5d0; /* light background that matches warm color scheme */
+  border-bottom: 2px solid #f26522; /* optional accent */
+}
+
+.town-filter-container label {
+  margin-right: 0.5rem;
+  color: #b22222; /* deep red for label text */
+}
+
+#townFilter {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #f26522;
+  border-radius: 4px;
+  background-color: #fff5ee;
+  color: #b22222;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#townFilter:hover {
+  background-color: #ffe0cc;
+}
 
     @keyframes scroll {
       from {
