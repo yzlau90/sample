@@ -27,49 +27,49 @@
       }
 
       function initMap() {
-  const tag = getQueryParam("tag");
-  if (tag) {
-    document.getElementById("page-title").textContent = `Hokkien Mee – ${tag.charAt(0).toUpperCase() + tag.slice(1)} Style`;
-  }
+        const tag = getQueryParam("tag");
+        if (tag) {
+          document.getElementById("page-title").textContent = `Hokkien Mee – ${tag.charAt(0).toUpperCase() + tag.slice(1)} Style`;
+        }
 
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 1.3521, lng: 103.8198 },
-    zoom: 12,
-  });
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 1.3521, lng: 103.8198 },
+          zoom: 12,
+        });
 
-  fetch("files/HKMlocations.csv")
-    .then(res => res.text())
-    .then(csv => {
-      Papa.parse(csv, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          const locations = results.data;
+        fetch("files/HKMlocations.csv")
+          .then(res => res.text())
+          .then(csv => {
+            Papa.parse(csv, {
+              header: true,
+              skipEmptyLines: true,
+              complete: (results) => {
+                const locations = results.data;
 
-          const filtered = tag
-            ? locations.filter(loc => loc.tags && loc.tags.toLowerCase().includes(tag))
-            : locations;
+                const filtered = tag
+                  ? locations.filter(loc => loc.tags && loc.tags.toLowerCase().includes(tag))
+                  : locations;
 
-          const sortedData = filtered
-            .filter(loc => loc.review_count && loc.rating)
-            .sort((a, b) => {
-              const reviewsA = parseInt(a.review_count) || 0;
-              const reviewsB = parseInt(b.review_count) || 0;
-              const ratingA = parseFloat(a.rating) || 0;
-              const ratingB = parseFloat(b.rating) || 0;
+                const sortedData = filtered
+                  .filter(loc => loc.review_count && loc.rating)
+                  .sort((a, b) => {
+                    const reviewsA = parseInt(a.review_count) || 0;
+                    const reviewsB = parseInt(b.review_count) || 0;
+                    const ratingA = parseFloat(a.rating) || 0;
+                    const ratingB = parseFloat(b.rating) || 0;
 
-              if (reviewsB !== reviewsA) {
-                return reviewsB - reviewsA;
-              } else {
-                return ratingB - ratingA;
+                    if (reviewsB !== reviewsA) {
+                      return reviewsB - reviewsA;
+                    } else {
+                      return ratingB - ratingA;
+                    }
+                  });
+
+                renderMarkersAndCards(sortedData);
               }
             });
-
-          renderMarkersAndCards(sortedData);
-        }
-      });
-    });
-}
+          });
+      }
 
       function renderMarkersAndCards(data) {
         const listContainer = document.getElementById("location-list");
@@ -116,23 +116,23 @@
         });
       }
 
-  function bookmarkAll() {
-    // Get all the location names from the DOM
-    const cards = document.querySelectorAll('.card h2');
-    const names = Array.from(cards).map(card => card.textContent.trim());
+      function bookmarkAll() {
+        // Get all the location names from the DOM
+        const cards = document.querySelectorAll('.card h2');
+        const names = Array.from(cards).map(card => card.textContent.trim());
 
-    if (names.length === 0) {
-      alert("No locations to bookmark.");
-      return;
-    }
+        if (names.length === 0) {
+          alert("No locations to bookmark.");
+          return;
+        }
 
-    // Create a Google Maps search query with all the names
-    const query = names.map(name => encodeURIComponent(name + " Singapore")).join('%0A');
+        // Create a Google Maps search query with all the names
+        const query = names.map(name => encodeURIComponent(name + " Singapore")).join('%0A');
 
-    // Open the query in a new Google Maps search
-    const mapsUrl = `https://www.google.com/maps/search/${query}`;
-    window.open(mapsUrl, '_blank');
-  }
+        // Open the query in a new Google Maps search
+        const mapsUrl = `https://www.google.com/maps/search/${query}`;
+        window.open(mapsUrl, '_blank');
+      }
 
       function formatTags(tagString) {
         if (!tagString) return "";
@@ -159,13 +159,22 @@
           likeSpan.textContent = newLikes;
         }
       }
-      
+
     </script>
     <!-- Replace with your actual Google Maps API key -->
     <script async
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ4mn9PMQS0DV7nVr3R95tCbhIqayTFoY&callback=initMap">
       </script>
-
+    <footer class="disclaimer-footer">
+      <p>
+        <strong>Disclaimer:</strong><br>
+        This website is created for learning purposes only. The information provided here should not be considered
+        professional advice. Please note that we make no guarantees regarding the accuracy, completeness, or reliability
+        of the contents of this website. Any actions you take based on the contents of this website are at your own
+        risk.
+        We are not liable for any losses or damages incurred from the use of this website.
+      </p>
+    </footer>
 </body>
 
 </html>
