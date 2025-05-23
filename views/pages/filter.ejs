@@ -71,6 +71,77 @@
           });
       }
 
+                  function isOpenNow(operatingHoursStr) {
+                    if (!operatingHoursStr) return false;
+
+                    const now = new Date();
+                    const currentDay = now.toLocaleDateString('en-SG', { weekday: 'short' }); // "Mon"
+                    const currentTime = now.getHours() + now.getMinutes() / 60;
+
+                    // Handle "closed on Mon to Wed" or "closed on Sun"
+                    const closedMatch = operatingHoursStr.match(/closed on ([a-zA-Z,\s\-to]+)/i);
+                    if (closedMatch) {
+                      const closedDaysStr = closedMatch[1];
+                      const closedDays = expandDays(closedDaysStr);
+                      if (closedDays.includes(currentDay)) return false;
+                    }
+
+                    // Extract all time slots, split by &, and, or comma
+                    const timeParts = operatingHoursStr
+                      .split(/closed on/i)[0] // Remove anything after "closed on"
+                      .split(/&|,| and /i)
+                      .map(part => part.trim());
+
+                    for (const part of timeParts) {
+                      const match = part.match(/([0-9.]+(?:am|pm)?)\s*-\s*([0-9.]+(?:am|pm)?)/i);
+                      if (match) {
+                        const openTime = parseTime(match[1]);
+                        const closeTime = parseTime(match[2]);
+                        if (openTime <= currentTime && currentTime <= closeTime) {
+                          return true;
+                        }
+                      }
+                    }
+
+                    return false;
+                  }
+
+                  function parseTime(timeStr) {
+                    const match = timeStr.match(/([0-9]{1,2})(?:\.([0-9]{1,2}))?(am|pm)?/i);
+                    if (!match) return null;
+
+                    let hour = parseInt(match[1]);
+                    const minutes = match[2] ? parseInt(match[2]) : 0;
+                    let period = match[3] ? match[3].toLowerCase() : null;
+
+                    // If no period is specified, assume 24-hour format (e.g., 13.30)
+                    if (!period) {
+                      return hour + minutes / 60;
+                    }
+
+                    if (period === 'pm' && hour < 12) hour += 12;
+                    if (period === 'am' && hour === 12) hour = 0;
+
+                    return hour + minutes / 60;
+                  }
+
+                  function expandDays(dayStr) {
+                    const dayMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const parts = dayStr.split(/,\s*| and /).flatMap(part => {
+                      if (part.includes('to')) {
+                        const [start, end] = part.split('to').map(s => s.trim());
+                        const startIdx = dayMap.indexOf(start);
+                        const endIdx = dayMap.indexOf(end);
+                        if (startIdx === -1 || endIdx === -1) return [];
+                        if (startIdx <= endIdx) return dayMap.slice(startIdx, endIdx + 1);
+                        return [...dayMap.slice(startIdx), ...dayMap.slice(0, endIdx + 1)];
+                      } else {
+                        return [part.trim()];
+                      }
+                    });
+                    return parts;
+                  }
+
       function renderMarkersAndCards(data) {
         const listContainer = document.getElementById("location-list");
         listContainer.innerHTML = "";
@@ -105,7 +176,7 @@
         <p><strong>Description:</strong> ${loc.description}</p>
         <p><strong>Taste Profile:</strong> <span class="tags">${formatTags(loc.tags)}</span></p>
         <p><strong>Location:</strong> ${loc.town}</p>
-        <p><strong>Operating Hours:</strong> ${loc.operating_hours}</p>
+        <p><strong>Operating Hours:</strong> ${loc.operating_hours} <span class="${isOpenNow(loc.operating_hours) ? 'open' : 'closed'}">${isOpenNow(loc.operating_hours) ? 'Open Now' : 'Closed'}</span></p>
         <p><strong>Price:</strong> $${parseFloat(loc.price || 0).toFixed(2)}</p>
         <p><strong>Don't want to queue?</strong> ${loc.pre_order && loc.pre_order.trim() ? loc.pre_order : "N/A"}</p>
         <p><a href="${loc.google_maps_url}" target="_blank">📍 Google Maps</a></p>
