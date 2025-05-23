@@ -21,10 +21,8 @@ const prisma = new PrismaClient();
 
 // Main landing page
 app.get('/', async function (req, res) {
-
-    res.render('pages/home');
-  
-});
+  res.render('pages/home');
+  });
 
 // About page
 app.get('/about', function (req, res) {
