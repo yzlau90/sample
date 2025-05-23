@@ -22,23 +22,8 @@ const prisma = new PrismaClient();
 // Main landing page
 app.get('/', async function (req, res) {
 
-  // Try-Catch for any errors
-  try {
-    // Get all blog posts
-    const blogs = await prisma.post.findMany({
-      orderBy: [
-        {
-          id: 'desc'
-        }
-      ]
-    });
-
-    // Render the homepage with all the blog posts
-    await res.render('pages/home', { blogs: blogs });
-  } catch (error) {
     res.render('pages/home');
-    console.log(error);
-  }
+  
 });
 
 // About page
