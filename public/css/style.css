@@ -33,14 +33,14 @@
     .filters a {
       font-weight: bold;
       padding: 0.5rem 1rem;
-      background: #C70039;
+      background: #1f82c2;
       color: white;
       text-decoration: none;
       border-radius: 5px;
     }
 
     .filters a:hover {
-      background: #900C3F;
+      background: #cc3795;
     }
 
     .list {
