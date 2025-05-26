@@ -33,7 +33,7 @@
     .filters a {
       font-weight: bold;
       padding: 0.5rem 1rem;
-      background: #1f82c2;
+      background: #ff7f00;
       color: white;
       text-decoration: none;
       border-radius: 5px;
@@ -130,7 +130,6 @@
 
     .about-container {
       text-align: center;
-
       margin-top: 50px;
       margin-bottom: 50px;
     }
@@ -148,7 +147,7 @@
 
     .about-link a {
       padding: 6px 12px;
-      background: orange;
+      background: #ff7f00;
       color: white;
       border-radius: 5px;
     }
@@ -269,3 +268,68 @@
       margin: 0;
       padding: 0;
     }
+    /* Make images scale within containers */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mobile-first responsive layout */
+@media (max-width: 768px) {
+  h1, .page-title {
+    font-size: 2rem;
+    margin: 0.5rem;
+  }
+
+  #map {
+    width: 95%;
+    height: 40vh;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .filters a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .location-list,
+  .location-card,
+  .card {
+    padding: 1rem;
+    margin: 1rem 0.5rem;
+    width: auto;
+  }
+
+  .town-filter-container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .about-link {
+    text-align: center;
+    margin: 1rem auto;
+  }
+
+  .rolling-banner img {
+    height: 100px;
+    margin: 0 10px;
+  }
+
+  button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .disclaimer-footer {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+}
